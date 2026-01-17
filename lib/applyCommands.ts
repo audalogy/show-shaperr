@@ -2,6 +2,7 @@ import { JSONPath } from "jsonpath-plus";
 import { DesignSchema } from "./designSchema";
 import { CommandListSchema } from "./commandsSchema";
 import { produce } from "immer";
+import { PRESETS, type PresetKey } from "./presets";
 
 export function applyCommands(schema: unknown, cmdList: unknown) {
   const base = DesignSchema.parse(schema);
@@ -111,6 +112,80 @@ export function applyCommands(schema: unknown, cmdList: unknown) {
             if (!updated) {
               console.warn("Update command did not match any path:", c.path, "value:", c.value);
             }
+            break;
+          }
+          case "apply_preset": {
+            const presetKey = c.value as PresetKey;
+            const preset = PRESETS[presetKey];
+            
+            if (!preset) {
+              console.warn(`Unknown preset key: ${presetKey}`);
+              break;
+            }
+
+            // 1. Merge preset.styles into draft.styles
+            Object.assign(draft.styles, preset.styles);
+
+            // 1a. Also set designStyle based on preset key for CSS class matching
+            if (presetKey === "netflix") {
+              (draft.styles as any).designStyle = "netflix";
+            } else if (presetKey === "uber") {
+              (draft.styles as any).designStyle = "uber";
+            } else {
+              // Clear designStyle for other presets that use appClass patterns
+              delete (draft.styles as any).designStyle;
+            }
+
+            // 2. Set layout.columns from preset
+            draft.layout.columns = preset.layout.columns;
+
+            // 3. Apply suggestedOrder: filter existing IDs, reorder, append remaining
+            if (preset.layout.suggestedOrder) {
+              const existingIds = new Set(draft.components.map((comp: any) => comp.id));
+              const suggestedIds: string[] = preset.layout.suggestedOrder.filter((id: string) => existingIds.has(id));
+              const remainingIds = draft.layout.order.filter((id: string) => !suggestedIds.includes(id));
+              draft.layout.order = [...suggestedIds, ...remainingIds];
+            }
+
+            // 4. Apply componentOverrides and className tokens
+            if (preset.componentOverrides) {
+              for (const override of preset.componentOverrides) {
+                const component = draft.components.find((comp: any) => comp.id === override.id);
+                if (component) {
+                  // Merge type if provided
+                  const overrideAny = override as any;
+                  if (overrideAny.type) {
+                    (component as any).type = overrideAny.type;
+                  }
+                  // Merge props if provided
+                  if (overrideAny.props) {
+                    component.props = { ...component.props, ...overrideAny.props };
+                  }
+                }
+              }
+            }
+
+            // 5. Apply className tokens from preset to components
+            for (const component of draft.components) {
+              if (component.type === "table" && preset.styles.tableClass) {
+                component.props = {
+                  ...component.props,
+                  className: preset.styles.tableClass,
+                };
+              } else if (component.type === "chart" && preset.styles.chartClass) {
+                component.props = {
+                  ...component.props,
+                  className: preset.styles.chartClass,
+                };
+              } else if ((component.type === "card" || component.type === "grid") && preset.styles.cardClass) {
+                component.props = {
+                  ...component.props,
+                  className: preset.styles.cardClass,
+                };
+              }
+            }
+
+            console.log(`Applied preset: ${presetKey}`);
             break;
           }
         }

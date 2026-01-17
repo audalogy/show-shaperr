@@ -31,6 +31,10 @@ export const CommandSchema = z.discriminatedUnion("op", [
     path: z.string(),
     value: ComponentBase,
   }),
+  z.object({
+    op: z.literal("apply_preset"),
+    value: z.enum(["spotify", "doordash", "uber", "netflix", "applemusic", "youtube"]),
+  }),
 ]);
 
 export const CommandListSchema = z.object({

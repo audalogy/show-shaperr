@@ -8,7 +8,7 @@ const SYSTEM_PROMPT = `
 You translate natural language design requests into a strict JSON command list that mutates a UI schema.
 Rules:
 Output ONLY valid JSON matching { "commands": Command[] }.
-Use only whitelisted ops: set_style, update, add_component, remove_component, move_component, replace_component.
+Use only whitelisted ops: set_style, update, add_component, remove_component, move_component, replace_component, apply_preset.
 Paths support JSONPath ($.styles, $.layout, $.components[?(@.id=="chart1")]) and shorthand /components[id=chart1].
 Prefer concise changes; do not exceed 30 components total.
 
@@ -19,6 +19,7 @@ Command structure requirements:
 - remove_component: { "op": "remove_component", "path": string }
 - move_component: { "op": "move_component", "from": string, "to": string, "position": "before"|"after"|"inside" }
 - replace_component: { "op": "replace_component", "path": string, "value": { id: string, type: string, props: {...} } }
+- apply_preset: { "op": "apply_preset", "value": "spotify"|"doordash"|"uber"|"netflix"|"applemusic"|"youtube" }
 
 Component prop examples:
 - Table: { sortBy: "title"|"rating"|"genres"|"premiered", sortDirection?: "asc"|"desc" (default: "desc" for rating/premiered, "asc" for title/genres), limit?: number, filterBy?: string, filterValue?: any }
@@ -26,10 +27,18 @@ Component prop examples:
 - Card: { limit?: number, sortBy?: string, style?: "minimal"|"image-heavy"|"compact", imageSize?: "small"|"medium"|"large", columns?: number, showText?: boolean }
 - Grid: { columns?: number, gap?: "compact"|"normal"|"spacious", style?: "netflix"|"uber"|"minimal"|"default" }
 
-Design pattern examples:
+Preset application (CRITICAL - use FIRST when user requests brand styling):
+- "Make it look like Spotify" or "Spotify style" or "like Spotify": FIRST emit { "op": "apply_preset", "value": "spotify" }, then optional follow-ups
+- "Make it look like DoorDash" or "DoorDash style" or "like DoorDash": FIRST emit { "op": "apply_preset", "value": "doordash" }, then optional follow-ups
+- "Make it look like Uber" or "Uber style" or "like Uber": FIRST emit { "op": "apply_preset", "value": "uber" }, then optional follow-ups
+- "Make it look like Netflix" or "Netflix style" or "like Netflix": FIRST emit { "op": "apply_preset", "value": "netflix" }, then optional follow-ups
+- "Make it look like Apple Music" or "Apple Music style" or "like Apple Music": FIRST emit { "op": "apply_preset", "value": "applemusic" }, then optional follow-ups
+- "Make it look like YouTube" or "YouTube style" or "like YouTube": FIRST emit { "op": "apply_preset", "value": "youtube" }, then optional follow-ups
+- After applying preset, you may add follow-up commands like move_component or update to fine-tune layout/props
+
+Design pattern examples (legacy - prefer apply_preset for brand styling):
 - "Netflix style": dark theme (#141414 bg), large card images, grid layout, minimal text, red accents
 - "Uber style": light theme, white bg, clean minimal design, compact cards, gray borders, subtle shadows
-- "Make this look like [App Name]": set designStyle to app name (netflix, uber) or use appStyle prop
 - "Minimal design": reduce clutter, increase spacing, clean typography
 - "Show top 10 rated movies" or "Show only top 10 rated movies": { "op": "update", "path": "/components[id=table1]/props", "value": { "sortBy": "rating", "sortDirection": "desc", "limit": 10 } }
 - "Show only top 10 rated": update table props { sortBy: "rating", sortDirection: "desc", limit: 10 }

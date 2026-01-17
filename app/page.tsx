@@ -14,6 +14,7 @@ import { Card } from "@/components/Card";
 import { Grid } from "@/components/Grid";
 import { useToast } from "@/components/ui/toast";
 import { getUserId, getDisplayName, clearUserData } from "@/lib/userId";
+import { cn } from "@/lib/utils";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -333,11 +334,12 @@ export default function Dashboard() {
     : "";
   
   const themeClass = designStyleClass || baseThemeClass;
+  const appClass = schema.styles.appClass || "";
 
   const displayName = getDisplayName();
 
   return (
-    <div className={themeClass}>
+    <div className={cn(themeClass, appClass)}>
       {/* Header with app name and user ID */}
       <div className="p-4 border-b flex items-center justify-between">
         <h1 className="text-xl font-bold">Show Shaper</h1>

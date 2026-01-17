@@ -7,6 +7,10 @@ export const StyleSchema = z.object({
   designStyle: z.enum(["minimal", "netflix", "uber", "default"]).optional(),
   appStyle: z.string().optional(), // For dynamic app names like "X", "Spotify", etc.
   cardStyle: z.enum(["minimal", "image-heavy", "compact"]).optional(),
+  appClass: z.string().optional(), // Optional Tailwind classes for app container
+  cardClass: z.string().optional(), // Optional Tailwind classes for card components
+  tableClass: z.string().optional(), // Optional Tailwind classes for table components
+  chartClass: z.string().optional(), // Optional Tailwind classes for chart components
 });
 
 export const ComponentBase = z.object({

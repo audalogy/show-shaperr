@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useMemo, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export function Table({ items, props }: { items: any[]; props: any }) {
   const helper = createColumnHelper<any>();
@@ -145,8 +146,10 @@ export function Table({ items, props }: { items: any[]; props: any }) {
     console.log("First 3 items in filtered data:", data.slice(0, 3));
   }, [props.sortBy, props.sortDirection, props.limit, props, data.length, items?.length, data]);
 
+  const className = props.className || "";
+  
   return (
-    <div className="rounded border p-4">
+    <div className={cn("rounded border p-4", className)}>
       <ShadcnTable>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

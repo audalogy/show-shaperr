@@ -93,16 +93,30 @@
   border-radius: 4px;
 }
 
-/* Netflix red accent for buttons and highlights */
-.design-netflix button[class*="default"],
-.design-netflix [class*="Button"][class*="default"] {
+/* Netflix header and text styling - ensure visibility */
+.design-netflix h1,
+.design-netflix [class*="text-xl"][class*="font-bold"],
+.design-netflix h1[class*="text-xl"] {
+  color: #ffffff !important;
+}
+
+.design-netflix [class*="opacity-70"],
+.design-netflix span[class*="text-sm"],
+.design-netflix [class*="text-sm"] {
+  color: #e5e5e5 !important;
+  opacity: 1 !important;
+}
+
+/* Netflix red accent for Apply button - more specific selectors */
+.design-netflix button:not([class*="outline"]):not([variant="outline"]),
+.design-netflix [class*="Button"]:not([class*="outline"]):not([variant="outline"]) {
   background-color: #E50914 !important;
   color: #ffffff !important;
   border-color: #E50914 !important;
 }
 
-.design-netflix button:hover,
-.design-netflix [class*="Button"]:hover {
+.design-netflix button:hover:not([class*="outline"]):not([variant="outline"]),
+.design-netflix [class*="Button"]:hover:not([class*="outline"]):not([variant="outline"]) {
   background-color: #F40612 !important;
 }
 
@@ -159,6 +173,62 @@
 .design-netflix .recharts-cartesian-axis-line,
 .design-netflix .recharts-cartesian-grid-line {
   stroke: #404040 !important;
+}
+
+/* Spotify header and button styling - when using black bg */
+.bg-black.text-white h1,
+.bg-black.text-white h1[class*="text-xl"] {
+  color: #1DB954 !important; /* Spotify green for title */
+}
+
+.bg-black.text-white [class*="text-sm"],
+.bg-black.text-white span[class*="text-sm"] {
+  color: #ffffff !important;
+  opacity: 0.9 !important;
+}
+
+.bg-black.text-white button:not([class*="outline"]),
+.bg-black.text-white [class*="Button"]:not([class*="outline"]) {
+  background-color: #1DB954 !important; /* Spotify green */
+  color: #000000 !important;
+  border-color: #1DB954 !important;
+  font-weight: 600 !important;
+}
+
+.bg-black.text-white button:hover:not([class*="outline"]),
+.bg-black.text-white [class*="Button"]:hover:not([class*="outline"]) {
+  background-color: #1ed760 !important;
+}
+
+/* YouTube/DoorDash/Apple Music - white bg with colored buttons */
+/* YouTube red for buttons */
+.bg-white.text-gray-900 button:not([class*="outline"]):not([variant="outline"]),
+.bg-white.text-gray-900 [class*="Button"]:not([class*="outline"]):not([variant="outline"]) {
+  background-color: #FF0000 !important; /* YouTube red (will be overridden for DoorDash/Apple Music) */
+  color: #ffffff !important;
+  border-color: #FF0000 !important;
+}
+
+.bg-white.text-gray-900 button:hover:not([class*="outline"]):not([variant="outline"]),
+.bg-white.text-gray-900 [class*="Button"]:hover:not([class*="outline"]):not([variant="outline"]) {
+  background-color: #cc0000 !important;
+}
+
+/* Apple Music - dark bg with pink buttons */
+.bg-gray-950.text-white h1[class*="text-xl"] {
+  color: #FA2D48 !important; /* Apple Music pink for title */
+}
+
+.bg-gray-950.text-white button:not([class*="outline"]):not([variant="outline"]),
+.bg-gray-950.text-white [class*="Button"]:not([class*="outline"]):not([variant="outline"]) {
+  background-color: #FA2D48 !important; /* Apple Music pink */
+  color: #ffffff !important;
+  border-color: #FA2D48 !important;
+}
+
+.bg-gray-950.text-white button:hover:not([class*="outline"]):not([variant="outline"]),
+.bg-gray-950.text-white [class*="Button"]:hover:not([class*="outline"]):not([variant="outline"]) {
+  background-color: #E91E63 !important;
 }
 
 /* Uber-inspired styling - Clean minimal white/gray with generous spacing */

@@ -1,5 +1,7 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+
 export function Card({ items, props }: { items: any[]; props: any }) {
   const style = props.style || "default";
   const limit = props.limit || 20;
@@ -34,9 +36,10 @@ export function Card({ items, props }: { items: any[]; props: any }) {
 
   const imageHeight = imageSize === "large" ? "h-64" : imageSize === "small" ? "h-32" : "h-48";
   const cardPadding = style === "minimal" ? "p-2" : "p-4";
+  const className = props.className || "";
 
   return (
-    <div className="rounded border overflow-hidden">
+    <div className={cn("rounded border overflow-hidden", className)}>
       <div className={`grid ${props.columns ? `grid-cols-${props.columns}` : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"} gap-4 ${cardPadding}`}>
         {data.map((item) => (
           <div

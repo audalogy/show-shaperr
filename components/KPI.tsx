@@ -1,5 +1,8 @@
+import { cn } from "@/lib/utils";
+
 export function KPI({ summary, items, props }: { summary: any; items?: any[]; props: any }) {
   const label = props.label ?? "Total";
+  const className = props.className || "";
   
   // Use filtered count if items are provided and KPI should reflect table filtering
   // Otherwise use summary.total
@@ -12,7 +15,7 @@ export function KPI({ summary, items, props }: { summary: any; items?: any[]; pr
   }
 
   return (
-    <div className="rounded border p-4 flex items-center justify-between">
+    <div className={cn("rounded border p-4 flex items-center justify-between", className)}>
       <div className="text-sm">{label}</div>
       <div className="text-2xl font-semibold">{value}</div>
     </div>
