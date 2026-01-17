@@ -1,0 +1,351 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Netflix-inspired styling - Dark theme with red accents, large imagery focus */
+.design-netflix {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --primary: 0 92% 48%;
+  --primary-foreground: 0 0% 100%;
+  background-color: #141414;
+  color: #ffffff;
+}
+
+.design-netflix,
+.design-netflix body {
+  background-color: #141414 !important;
+  color: #ffffff !important;
+}
+
+.design-netflix .bg-white,
+.design-netflix .bg-neutral-900 {
+  background-color: #000000 !important;
+}
+
+.design-netflix .text-white,
+.design-netflix p,
+.design-netflix h1,
+.design-netflix h2,
+.design-netflix h3,
+.design-netflix div {
+  color: #ffffff !important;
+}
+
+.design-netflix .border {
+  border-color: #333333 !important;
+}
+
+.design-netflix [class*="card"],
+.design-netflix [class*="Card"],
+.design-netflix .rounded.border {
+  background-color: #2f2f2f !important;
+  border-color: #404040 !important;
+  border-radius: 4px;
+}
+
+/* Netflix red accent for buttons and highlights */
+.design-netflix button[class*="default"],
+.design-netflix [class*="Button"][class*="default"] {
+  background-color: #E50914 !important;
+  color: #ffffff !important;
+  border-color: #E50914 !important;
+}
+
+.design-netflix button:hover,
+.design-netflix [class*="Button"]:hover {
+  background-color: #F40612 !important;
+}
+
+/* Netflix table styling - dark with subtle borders */
+.design-netflix table,
+.design-netflix [class*="Table"] {
+  background-color: transparent !important;
+  border-color: #333333 !important;
+}
+
+.design-netflix th,
+.design-netflix [class*="TableHead"] {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  border-color: #333333 !important;
+}
+
+.design-netflix td,
+.design-netflix [class*="TableCell"] {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border-color: #333333 !important;
+}
+
+.design-netflix tr:hover,
+.design-netflix [class*="TableRow"]:hover {
+  background-color: #2f2f2f !important;
+}
+
+/* Netflix chart styling - red bars, dark theme */
+.design-netflix .chart-container,
+.design-netflix .chart-container .rounded.border {
+  background-color: #2f2f2f !important;
+  border-color: #404040 !important;
+}
+
+.design-netflix .recharts-tooltip-wrapper,
+.design-netflix .recharts-default-tooltip {
+  background-color: #2f2f2f !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+.design-netflix .recharts-legend-wrapper {
+  color: #ffffff !important;
+}
+
+.design-netflix .recharts-cartesian-axis-tick-value,
+.design-netflix .recharts-label {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.design-netflix .recharts-cartesian-axis-line,
+.design-netflix .recharts-cartesian-grid-line {
+  stroke: #404040 !important;
+}
+
+/* Uber-inspired styling - Clean minimal white/gray with generous spacing */
+.design-uber {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --primary: 191 95% 45%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 0 0% 96%;
+  --border: 0 0% 90%;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.design-uber,
+.design-uber body {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.design-uber .bg-white,
+.design-uber .bg-neutral-900 {
+  background-color: #ffffff !important;
+}
+
+.design-uber .text-white,
+.design-uber p,
+.design-uber h1,
+.design-uber h2,
+.design-uber h3 {
+  color: #000000 !important;
+}
+
+.design-uber .border {
+  border-color: #E5E7EB !important;
+}
+
+/* Uber card styling - light gray, subtle shadows, rounded corners */
+.design-uber [class*="card"],
+.design-uber [class*="Card"],
+.design-uber .rounded.border {
+  background-color: #F8F9FA !important;
+  border-color: #E5E7EB !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  padding: 24px !important;
+}
+
+/* Uber button styling - black with white text, or accent blue */
+.design-uber button[class*="default"],
+.design-uber [class*="Button"][class*="default"] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  padding: 12px 24px !important;
+}
+
+.design-uber button:hover,
+.design-uber [class*="Button"]:hover {
+  background-color: #1a1a1a !important;
+}
+
+.design-uber button[class*="outline"],
+.design-uber [class*="Button"][class*="outline"] {
+  background-color: transparent !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 8px !important;
+}
+
+/* Uber table styling - clean white with subtle borders */
+.design-uber table,
+.design-uber [class*="Table"] {
+  background-color: #ffffff !important;
+  border-color: #E5E7EB !important;
+}
+
+.design-uber th,
+.design-uber [class*="TableHead"] {
+  background-color: #F8F9FA !important;
+  color: #000000 !important;
+  border-color: #E5E7EB !important;
+  font-weight: 600 !important;
+  padding: 16px !important;
+}
+
+.design-uber td,
+.design-uber [class*="TableCell"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #E5E7EB !important;
+  padding: 16px !important;
+}
+
+.design-uber tr:hover,
+.design-uber [class*="TableRow"]:hover {
+  background-color: #F8F9FA !important;
+}
+
+/* Uber input styling - clean with subtle borders */
+.design-uber input,
+.design-uber [class*="Input"] {
+  background-color: #ffffff !important;
+  border-color: #D1D5DB !important;
+  border-radius: 8px !important;
+  color: #000000 !important;
+  padding: 12px 16px !important;
+}
+
+.design-uber input:focus,
+.design-uber [class*="Input"]:focus {
+  border-color: #000000 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Uber chart styling - black bars, clean white theme */
+.design-uber .chart-container,
+.design-uber .chart-container .rounded.border {
+  background-color: #F8F9FA !important;
+  border-color: #E5E7EB !important;
+}
+
+.design-uber .recharts-tooltip-wrapper,
+.design-uber .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border-color: #E5E7EB !important;
+  color: #000000 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.design-uber .recharts-legend-wrapper {
+  color: #000000 !important;
+}
+
+.design-uber .recharts-cartesian-axis-tick-value,
+.design-uber .recharts-label {
+  fill: #000000 !important;
+  color: #000000 !important;
+}
+
+.design-uber .recharts-cartesian-axis-line,
+.design-uber .recharts-cartesian-grid-line {
+  stroke: #E5E7EB !important;
+}
+
+/* Generous spacing for Uber */
+.design-uber .p-4 {
+  padding: 24px !important;
+}
+
+.design-uber .gap-4 {
+  gap: 24px !important;
+}
+
+.design-uber .text-gray-900 {
+  color: #000000 !important;
+}
+
+.design-uber .text-gray-600 {
+  color: #6B7280 !important;
+}
+
+/* Spacing utilities */
+.spacing-compact {
+  --spacing: 0.5rem;
+}
+
+.spacing-normal {
+  --spacing: 1rem;
+}
+
+.spacing-spacious {
+  --spacing: 2rem;
+}
+
+.spacing-compact [class*="gap-"] {
+  gap: var(--spacing);
+}
+
+.spacing-normal [class*="gap-"] {
+  gap: var(--spacing);
+}
+
+.spacing-spacious [class*="gap-"] {
+  gap: var(--spacing);
+}
