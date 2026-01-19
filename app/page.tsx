@@ -15,6 +15,7 @@ import { Grid } from "@/components/Grid";
 import { useToast } from "@/components/ui/toast";
 import { getUserId, getDisplayName, clearUserData } from "@/lib/userId";
 import { cn } from "@/lib/utils";
+import { addToHistory, canUndo, canRedo } from "@/lib/history";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -22,6 +23,8 @@ export default function Dashboard() {
   const [prompt, setPrompt] = useState("");
   const promptInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const [history, setHistory] = useState<Design[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
   // Check auth
   useEffect(() => {
@@ -102,6 +105,18 @@ export default function Dashboard() {
         // Deep clone to ensure React detects the change
         const clonedSchema = JSON.parse(JSON.stringify(parsed));
         setSchema(clonedSchema);
+        
+        // Load history if available
+        if (schemaData?.history) {
+          const clonedHistory = schemaData.history.map((h: Design) => JSON.parse(JSON.stringify(h)));
+          setHistory(clonedHistory);
+          // #region agent log
+          fetch('http://127.0.0.1:7243/ingest/6ea3fd79-b3d2-457c-9e33-7e9141f0974d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:113',message:'History loaded from API',data:{historyLength:clonedHistory.length,historyIndex:schemaData.historyIndex},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+          // #endregion
+        }
+        if (schemaData?.historyIndex !== undefined) {
+          setHistoryIndex(schemaData.historyIndex);
+        }
       } catch (error) {
         console.error("Failed to parse schema:", error);
         console.error("Schema data that failed:", schemaData);
@@ -227,6 +242,23 @@ export default function Dashboard() {
       const clonedSchema = JSON.parse(JSON.stringify(next));
       setSchema(clonedSchema);
       
+      // Update history: if we're in the middle of history (undo was done), truncate
+      let finalHistory: Design[];
+      if (historyIndex >= 0) {
+        // Truncate redo stack: keep history up to current index, then add new
+        finalHistory = history.slice(0, historyIndex + 1);
+        finalHistory = addToHistory(finalHistory, next, 10);
+      } else {
+        // At latest, just add to history
+        finalHistory = addToHistory(history, next, 10);
+      }
+      setHistory(finalHistory);
+      setHistoryIndex(-1); // Reset to latest
+      
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/6ea3fd79-b3d2-457c-9e33-7e9141f0974d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:248',message:'History updated after command',data:{historyLength:finalHistory.length,historyIndex:-1,canUndo:canUndo(-1,finalHistory.length),canRedo:canRedo(-1,finalHistory.length)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+      // #endregion
+      
       // Clear the input
       setPrompt("");
       if (promptInputRef.current) {
@@ -246,7 +278,11 @@ export default function Dashboard() {
             "Content-Type": "application/json",
             "x-user-id": uid,
           },
-          body: JSON.stringify({ schema: next }),
+          body: JSON.stringify({ 
+            schema: next,
+            history: finalHistory,
+            historyIndex: -1,
+          }),
         });
         
         if (saveRes.ok) {
@@ -277,6 +313,68 @@ export default function Dashboard() {
         variant: "destructive",
       });
     }
+  }
+
+  // Save schema with history helper
+  async function saveSchemaWithHistory(
+    schemaToSave: Design,
+    historyToSave: Design[],
+    indexToSave: number
+  ) {
+    try {
+      const uid = getUserId();
+      if (!uid) return;
+      
+      const res = await fetch("/api/schema", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": uid,
+        },
+        body: JSON.stringify({
+          schema: schemaToSave,
+          history: historyToSave,
+          historyIndex: indexToSave,
+        }),
+      });
+      
+      if (!res.ok) {
+        console.error("Failed to save history:", res.status);
+      }
+    } catch (error) {
+      console.error("Failed to save history:", error);
+    }
+  }
+
+  // Undo function
+  function handleUndo() {
+    if (!canUndo(historyIndex, history.length)) return;
+    
+    const newIndex = historyIndex === -1 
+      ? history.length - 2  // Move from latest to second-to-last
+      : historyIndex - 1;
+    
+    const schemaToLoad = history[newIndex];
+    const clonedSchema = JSON.parse(JSON.stringify(schemaToLoad));
+    setSchema(clonedSchema);
+    setHistoryIndex(newIndex);
+    
+    // Save to database
+    saveSchemaWithHistory(schemaToLoad, history, newIndex);
+  }
+
+  // Redo function
+  function handleRedo() {
+    if (!canRedo(historyIndex, history.length)) return;
+    
+    const newIndex = historyIndex + 1;
+    const schemaToLoad = history[newIndex];
+    const clonedSchema = JSON.parse(JSON.stringify(schemaToLoad));
+    setSchema(clonedSchema);
+    setHistoryIndex(newIndex);
+    
+    // Save to database
+    saveSchemaWithHistory(schemaToLoad, history, newIndex);
   }
 
   // Apply font scale and spacing to root
@@ -372,6 +470,28 @@ export default function Dashboard() {
           className="flex-1"
         />
         <Button onClick={submitPrompt}>Apply</Button>
+        <Button 
+          onClick={handleUndo}
+          disabled={!canUndo(historyIndex, history.length)}
+          variant="outline"
+        >
+          Undo
+        </Button>
+        {/* #region agent log */}
+        {(() => {
+          const undoEnabled = canUndo(historyIndex, history.length);
+          const redoEnabled = canRedo(historyIndex, history.length);
+          fetch('http://127.0.0.1:7243/ingest/6ea3fd79-b3d2-457c-9e33-7e9141f0974d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:449',message:'Button state check',data:{historyLength:history.length,historyIndex,undoEnabled,redoEnabled},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+          return null;
+        })()}
+        {/* #endregion */}
+        <Button 
+          onClick={handleRedo}
+          disabled={!canRedo(historyIndex, history.length)}
+          variant="outline"
+        >
+          Redo
+        </Button>
         <Button
           variant="outline"
           onClick={() => {
