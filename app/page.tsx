@@ -445,6 +445,15 @@ export default function Dashboard() {
           {displayName && (
             <span className="text-sm opacity-70">User: {displayName}</span>
           )}
+          <Button
+            variant="outline"
+            onClick={() => {
+              clearUserData(false); // Keep mapping so same display name gets same UUID
+              router.push("/login");
+            }}
+          >
+            Logout
+          </Button>
         </div>
       </div>
 
@@ -491,15 +500,6 @@ export default function Dashboard() {
           variant="outline"
         >
           Redo
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            clearUserData(false); // Keep mapping so same display name gets same UUID
-            router.push("/login");
-          }}
-        >
-          Logout
         </Button>
       </div>
 
