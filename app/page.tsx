@@ -232,28 +232,36 @@ export default function Dashboard() {
       console.log("Schema before applying commands - table1 props:", 
         schema.components.find((c: any) => c.id === "table1")?.props);
       
+      // Update history: save current schema before applying commands
+      // This allows us to undo back to the current state
+      let finalHistory: Design[];
+      if (historyIndex >= 0) {
+        // We're in the middle of history (after an undo)
+        // Truncate redo stack: keep history up to current index
+        finalHistory = history.slice(0, historyIndex + 1);
+        // Current state is already in history at historyIndex, just add the new state
+      } else {
+        // We're at latest (historyIndex === -1)
+        // Current schema is not yet saved in history, save it first
+        const currentSchemaClone = JSON.parse(JSON.stringify(schema));
+        finalHistory = addToHistory(history, currentSchemaClone, 10);
+      }
+      
+      // Now apply commands to get the new state
       const next = applyCommands(schema, data);
       const table1Props = next.components.find((c: any) => c.id === "table1")?.props;
       console.log("Schema after applying commands - table1 props:", table1Props);
       console.log("Table1 component full:", next.components.find((c: any) => c.id === "table1"));
       console.log("Full schema after commands:", JSON.stringify(next, null, 2));
-
+      
+      // Add the new state to history
+      finalHistory = addToHistory(finalHistory, next, 10);
+      setHistory(finalHistory);
+      setHistoryIndex(-1); // Reset to latest
+      
       // Force deep clone to ensure React detects changes - this triggers re-render
       const clonedSchema = JSON.parse(JSON.stringify(next));
       setSchema(clonedSchema);
-      
-      // Update history: if we're in the middle of history (undo was done), truncate
-      let finalHistory: Design[];
-      if (historyIndex >= 0) {
-        // Truncate redo stack: keep history up to current index, then add new
-        finalHistory = history.slice(0, historyIndex + 1);
-        finalHistory = addToHistory(finalHistory, next, 10);
-      } else {
-        // At latest, just add to history
-        finalHistory = addToHistory(history, next, 10);
-      }
-      setHistory(finalHistory);
-      setHistoryIndex(-1); // Reset to latest
       
       // #region agent log
       fetch('http://127.0.0.1:7243/ingest/6ea3fd79-b3d2-457c-9e33-7e9141f0974d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:248',message:'History updated after command',data:{historyLength:finalHistory.length,historyIndex:-1,canUndo:canUndo(-1,finalHistory.length),canRedo:canRedo(-1,finalHistory.length)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
@@ -440,7 +448,7 @@ export default function Dashboard() {
     <div className={cn(themeClass, appClass)}>
       {/* Header with app name and user ID */}
       <div className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-bold">Show Shaper</h1>
+        <h1 className="text-xl font-bold">Show Shaperr</h1>
         <div className="flex items-center gap-4">
           {displayName && (
             <span className="text-sm opacity-70">User: {displayName}</span>
