@@ -161,8 +161,8 @@ export function Chart({ summary, props }: { summary: any; props: any }) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-              outerRadius={80}
+              label={false}
+              outerRadius={120}
               fill={barColor}
               dataKey="value"
             >
@@ -171,14 +171,33 @@ export function Chart({ summary, props }: { summary: any; props: any }) {
               ))}
             </Pie>
             <Tooltip 
-              contentStyle={{
-                backgroundColor: brandStyle === "netflix" || brandStyle === "spotify" || brandStyle === "applemusic" ? "#2f2f2f" : brandStyle === "uber" || brandStyle === "youtube" || brandStyle === "doordash" ? "#ffffff" : undefined,
-                border: brandStyle === "netflix" || brandStyle === "spotify" || brandStyle === "applemusic" ? "1px solid #404040" : brandStyle === "uber" || brandStyle === "youtube" || brandStyle === "doordash" ? "1px solid #E5E7EB" : undefined,
-                color: textColor,
-                borderRadius: "8px",
+              content={({ active, payload }) => {
+                if (!active || !payload || payload.length === 0) return null;
+                const item = payload[0];
+                const nameValue = item.name ?? "";
+                const numValue = typeof item.value === 'number' ? item.value : 0;
+                // Calculate total from all data points
+                const total = data.reduce((sum: number, item: any) => {
+                  const itemValue = typeof item.value === 'number' ? item.value : 0;
+                  return sum + itemValue;
+                }, 0);
+                // Calculate percentage
+                const percent = total > 0 ? ((numValue / total) * 100).toFixed(1) : "0.0";
+                // Show both numerical value and percentage: "Name: value (XX.X%)"
+                return (
+                  <div
+                    style={{
+                      backgroundColor: brandStyle === "netflix" || brandStyle === "spotify" || brandStyle === "applemusic" ? "#2f2f2f" : brandStyle === "uber" || brandStyle === "youtube" || brandStyle === "doordash" ? "#ffffff" : undefined,
+                      border: brandStyle === "netflix" || brandStyle === "spotify" || brandStyle === "applemusic" ? "1px solid #404040" : brandStyle === "uber" || brandStyle === "youtube" || brandStyle === "doordash" ? "1px solid #E5E7EB" : undefined,
+                      color: textColor,
+                      borderRadius: "8px",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    {`${nameValue}: ${numValue} (${percent}%)`}
+                  </div>
+                );
               }}
-              labelStyle={{ color: textColor }}
-              itemStyle={{ color: textColor }}
             />
             <Legend 
               wrapperStyle={{ color: textColor }}
